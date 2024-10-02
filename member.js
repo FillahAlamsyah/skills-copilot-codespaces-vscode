@@ -1,9 +1,10 @@
-function skillMember() {
-  return {
-    age: 30,
-    name: 'John',
-    getAge: function() {
-      return this.age;
+function skillsMember() {
+    return {
+        name: 'John',
+        age: 30,
+        skills: ['HTML', 'CSS', 'JS'],
+        greeting: function() {
+            return `Hello, I'm ${this.name}. I'm ${this.age} years old.`
+        }
     }
-  };
 }
