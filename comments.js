@@ -1,30 +1,35 @@
 // Create Web Server
-// Create a web server that listens on port 3000. When it receives a GET request on /comments, it should send back the contents of the comments.json file.
-// If the comments.json file does not exist, it should send back a 404 status code.
-// If there is a server error, it should send back a 500 status code.
-// You should use the http module and not Express.
 
-const http = require('http');
+// Import modules
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
 const fs = require('fs');
-const path = require('path');
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/comments') {
-    fs.readFile(path.join(__dirname, 'comments.json'), 'utf8', (err, data) => {
-      if (err) {
-        res.statusCode = 404;
-        res.end();
-      } else {
-        res.setHeader('Content-Type', 'application/json');
-        res.end(data);
-      }
-    });
-  } else {
-    res.statusCode = 404;
-    res.end();
-  }
+// Set up the server
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static('public'));
+
+// Create a new comment
+app.post('/comments', (req, res) => {
+    const comment = req.body;
+    const comments = fs.readFileSync('comments.json');
+    const commentsArray = JSON.parse(comments);
+    commentsArray.push(comment);
+
+    fs.writeFileSync('comments.json', JSON.stringify(commentsArray));
+
+    res.json(comment);
 });
 
-server.listen(3000, () => {
-  console.log('Server is running on port 3000');
+// Get all comments
+app.get('/comments', (req, res) => {
+    const comments = fs.readFileSync('comments.json');
+    res.json(JSON.parse(comments));
+});
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
 });
